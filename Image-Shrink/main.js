@@ -5,9 +5,10 @@ const imagemin = require('imagemin')
 const imageminMozjpeg = require('imagemin-mozjpeg')
 const imageminPngquant = require('imagemin-pngquant')
 const slash = require('slash')
+const log = require('electron-log')
 let mainWindow
 let aboutWindow
-process.env.NODE_ENV = 'development'
+process.env.NODE_ENV = 'production'
 const isDev = process.env.NODE_ENV !== 'production' ? true : false
 const isMac = process.platform === 'darwin' ? true : false
 const isLinux = process.platform === 'linux' ? true : false
@@ -19,7 +20,7 @@ function createAboutWindow (){
         title: 'About',
         width: 300,
         height: 300,
-        icon: __dirname+'/assets/icons/profileImage.png',
+        icon: path.join(__dirname,'/assets/icons/64x64.png'),
         resizable: false,
         backgroundColor:'white',
     })
@@ -124,10 +125,16 @@ async function shrinkImage({ imgPath, quality, dest}){
         })
 
         console.log(files)
+        log.info(files)
         shell.openPath(dest)
+
+
+        mainWindow.webContents.send('image:done')
+
 
     }catch(err){
         console.log(err)
+        log.error(err)
     }
 }
 app.on('activate', () => {
